@@ -1,8 +1,8 @@
 package App::GitHub::create;
 BEGIN {
-  $App::GitHub::create::VERSION = '0.0010';
+  $App::GitHub::create::VERSION = '0.0011';
 }
-# ABSTRACT: Create a github repository from the command-line
+# ABSTRACT: Create a github repository from the commandline
 
 
 use strict;
@@ -178,15 +178,15 @@ __END__
 
 =head1 NAME
 
-App::GitHub::create - Create a github repository from the command-line
+App::GitHub::create - Create a github repository from the commandline
 
 =head1 VERSION
 
-version 0.0010
+version 0.0011
 
 =head1 SYNOPSIS
 
-    # Create the repository github//alice/xyzzy
+    # Create the repository github:alice/xyzzy
     github-create --login alice --token 42fe60... --name xyzzy
 
     # Pulling login and token from $HOME/.github
@@ -207,7 +207,13 @@ A simple tool for creating a new github repository
     login <login>
     token <token>
 
-Optionally GnuPG encrypted
+(Optionally GnuPG encrypted; see L<Config::Identity>)
+
+=head1 SEE ALSO
+
+L<App::GitHub::update>
+
+L<Config::Identity>
 
 =head1 AUTHOR
 

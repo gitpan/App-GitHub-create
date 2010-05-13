@@ -21,12 +21,16 @@ my %WriteMakefileArgs = (
                        'BUILD_REQUIRES' => {
                                              'Test::Most' => '0'
                                            },
-                       'ABSTRACT' => 'Create a github repository from the command-line',
+                       'ABSTRACT' => 'Create a github repository from the commandline',
                        'EXE_FILES' => [
                                         'bin/github-create'
                                       ],
-                       'VERSION' => '0.0010',
-                       'PREREQ_PM' => {},
+                       'VERSION' => '0.0011',
+                       'PREREQ_PM' => {
+                                        'Getopt::Long' => '0',
+                                        'LWP::UserAgent' => '0',
+                                        'Config::Identity' => '0'
+                                      },
                        'LICENSE' => 'perl'
                      );
 
