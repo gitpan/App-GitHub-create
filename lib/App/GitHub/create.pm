@@ -1,6 +1,6 @@
 package App::GitHub::create;
 BEGIN {
-  $App::GitHub::create::VERSION = '0.0011';
+  $App::GitHub::create::VERSION = '0.0012';
 }
 # ABSTRACT: Create a github repository from the commandline
 
@@ -61,7 +61,7 @@ sub usage (;$) {
     }
     warn <<_END_;
 
-Usage: github-create [opt] --name <name>
+Usage: github-create [options] <name>
 
     --login ...         Your github login
     --token ...         The github token associated with the given login
@@ -89,7 +89,7 @@ sub run {
     my @arguments = @_;
 
     my ( $login, $token, $help );
-    my ( $name, $homepage, $description, $private, $public );
+    my ( $name, $homepage, $description, $private, $public, $dry_run );
 
     usage 0 unless @arguments;
 
@@ -107,11 +107,15 @@ sub run {
     
             'private' => \$private,
             'public' => \$public,
+
+            'dry-run' => \$dry_run,
         );
+        @arguments = @ARGV;
     }
 
     usage 0 if $help;
 
+    $name = $arguments[0] unless defined $name && length $name;
     unless ( defined $name && length $name ) {
         usage <<_END_;
 github-create: Missing name (--name)
@@ -126,12 +130,33 @@ _END_
     $public = $public ? 1 : 0;
 
     eval {
-        my $response = $self->create(
-            login => $login, token => $token,
-            name => $name, description => $description, homepage => $homepage, public => $public,
-        );
+        my $owner = $login;
+        $owner = '<username>' unless defined $owner;
+        unless ( $dry_run ) {
 
-        print $response->as_string, "\n";
+            my $response = $self->create(
+                login => $login, token => $token,
+                name => $name, description => $description, homepage => $homepage, public => $public,
+            );
+
+            print $response->as_string;
+
+            eval {
+                no warnings;
+                require JSON;
+                my $data = JSON->new->decode( $response->decoded_content );
+                $_ and $owner = $_ for $data->{repository}->{owner};
+            };
+        }
+
+        print <<_END_;
+
+Repository $name created. To track it, run the following:
+
+    # git remote add origin git\@github.com:$owner/$name.git
+    # git push origin master
+
+_END_
     };
     if ($@) {
         usage <<_END_;
@@ -182,18 +207,18 @@ App::GitHub::create - Create a github repository from the commandline
 
 =head1 VERSION
 
-version 0.0011
+version 0.0012
 
 =head1 SYNOPSIS
 
     # Create the repository github:alice/xyzzy
-    github-create --login alice --token 42fe60... --name xyzzy
+    github-create --login alice --token 42fe60... xyzzy
 
     # Pulling login and token from $HOME/.github
-    github-create --name xyzzy
+    github-create xyzzy
 
     # With description and homepage
-    github-create --name xyzzy --description "The incredible Xyzzy" --homepage http://example/xyzzy
+    github-create xyzzy --description "The incredible Xyzzy" --homepage http://example/xyzzy
 
     # Print out usage
     github-create --help

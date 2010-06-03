@@ -25,7 +25,7 @@ my %WriteMakefileArgs = (
                        'EXE_FILES' => [
                                         'bin/github-create'
                                       ],
-                       'VERSION' => '0.0011',
+                       'VERSION' => '0.0012',
                        'PREREQ_PM' => {
                                         'Getopt::Long' => '0',
                                         'LWP::UserAgent' => '0',
